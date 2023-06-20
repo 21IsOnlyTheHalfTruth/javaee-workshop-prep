@@ -21,7 +21,6 @@ public class AnimalDTO {
         animalDTO.type = animalEntity.type;
         animalDTO.comment = animalEntity.comment;
         animalDTO.available = animalEntity.available;
-        // todo map to DTO
         return animalDTO;
     }
 }

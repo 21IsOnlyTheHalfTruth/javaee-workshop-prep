@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Path("/resources/animal")
 @Produces(MediaType.APPLICATION_JSON)
@@ -19,9 +20,9 @@ public class AnimalResource {
     AnimalRepository repository;
 
     @GET
-    public List<AnimalEntity> getAnimalList() {
-        repository.getAll();
-        return repository.getAll(); // todo have a different view
+    public List<AnimalDTO> getAnimalList() {
+        List<AnimalEntity> allEntities = repository.getAll();
+        return allEntities.stream().map(AnimalDTO::fromEntity).collect(Collectors.toList());
     }
 
     @POST
