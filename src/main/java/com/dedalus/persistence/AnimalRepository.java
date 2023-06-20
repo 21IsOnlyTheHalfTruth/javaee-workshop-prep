@@ -9,6 +9,8 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +29,7 @@ public class AnimalRepository {
         // set attributes
         if(entityFromDBOptional.isEmpty()) {
             System.out.println("Was not able to find the id:"+entity.id); // in a real world this would be a logger
-            return null;
+            throw new WebApplicationException("Was not able to find the id:  " +entity.id, Response.Status.NOT_FOUND);
         }
         var entityFromDb = entityFromDBOptional.get();
         updateEntity(entity,entityFromDb );
