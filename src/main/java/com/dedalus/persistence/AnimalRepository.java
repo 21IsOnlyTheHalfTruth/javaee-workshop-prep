@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class AnimalRepository {
@@ -22,11 +23,16 @@ public class AnimalRepository {
     }
 
     public AnimalEntity put(AnimalEntity entity) {
-        AnimalEntity entityFromDB = em.find(AnimalEntity.class, entity);
+        Optional<AnimalEntity> entityFromDBOptional = Optional.ofNullable(em.getReference(entity.getClass(), entity.id));
         // set attributes
-        updateEntity(entity, entityFromDB);
-        em.merge(entityFromDB);
-        return entityFromDB;
+        if(entityFromDBOptional.isEmpty()) {
+            System.out.println("Was not able to find the id:"+entity.id); // in a real world this would be a logger
+            return null;
+        }
+        var entityFromDb = entityFromDBOptional.get();
+        updateEntity(entity,entityFromDb );
+        em.merge(entityFromDb);
+        return entityFromDb;
     }
 
     private void updateEntity(AnimalEntity source, AnimalEntity target) {
