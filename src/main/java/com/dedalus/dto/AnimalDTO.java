@@ -15,8 +15,13 @@ public class AnimalDTO {
     }
 
     public static AnimalDTO fromEntity(AnimalEntity animalEntity) {
-
+        AnimalDTO animalDTO = new AnimalDTO();
+        animalDTO.id = animalEntity.id.intValue();
+        animalDTO.name = animalEntity.name;
+        animalDTO.type = animalEntity.type;
+        animalDTO.comment = animalEntity.comment;
+        animalDTO.available = animalEntity.available;
         // todo map to DTO
-        return new AnimalDTO();
+        return animalDTO;
     }
 }
