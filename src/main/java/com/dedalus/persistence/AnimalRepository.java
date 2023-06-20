@@ -25,23 +25,15 @@ public class AnimalRepository {
     }
 
     public AnimalEntity put(AnimalEntity entity) {
-        Optional<AnimalEntity> entityFromDBOptional = Optional.ofNullable(em.getReference(entity.getClass(), entity.id));
+        Optional<AnimalEntity> entityFromDBOptional = getRefById(entity);
         // set attributes
         if(entityFromDBOptional.isEmpty()) {
             System.out.println("Was not able to find the id:"+entity.id); // in a real world this would be a logger
             throw new WebApplicationException("Was not able to find the id:  " +entity.id, Response.Status.NOT_FOUND);
         }
-        var entityFromDb = entityFromDBOptional.get();
-        updateEntity(entity,entityFromDb );
-        em.merge(entityFromDb);
-        return entityFromDb;
-    }
-
-    private void updateEntity(AnimalEntity source, AnimalEntity target) {
-        source.name = target.name;
-        source.type = target.type;
-        source.comment = target.comment;
-        source.available = target.available;
+        em.merge(entity);
+        // maybe we have to flush
+        return entity;
     }
 
     public List<AnimalEntity> getAll() {
@@ -53,18 +45,10 @@ public class AnimalRepository {
         TypedQuery<AnimalEntity> allQuery = em.createQuery(all);
         return allQuery.getResultList();
     }
-}
-/*
-    public AnimalEntity getById(Long id){
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<AnimalEntity> cq = cb.createQuery("select * from Artist where id="; AnimalEntity.class);
 
-        Root<AnimalEntity> rootEntry = cq.from(AnimalEntity.class);
-        CriteriaQuery<AnimalEntity> all = cq.select(rootEntry);
 
-        TypedQuery<AnimalEntity> allQuery = em.createQuery(all);
-        return allQuery.getResultList();
+    public Optional<AnimalEntity> getRefById(AnimalEntity entity){
+        return Optional.ofNullable(em.getReference(entity.getClass(), entity.id));
     }
-
 }
-*/
+
