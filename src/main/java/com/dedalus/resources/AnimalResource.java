@@ -1,6 +1,7 @@
 package com.dedalus.resources;
 
 import com.dedalus.dto.AnimalDTO;
+import com.dedalus.dto.BasicAnimalDTO;
 import com.dedalus.model.AnimalEntity;
 import com.dedalus.persistence.AnimalRepository;
 
@@ -8,6 +9,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
 import java.util.List;
 
 @Path("/resources/animal")
@@ -29,6 +31,16 @@ public class AnimalResource {
         AnimalEntity animal = AnimalEntity.getAnimalEntity(animalDTO);
         AnimalEntity savedEntity = repository.save(animal);
         return AnimalDTO.fromEntity(savedEntity);
+    }
 
+    @GET
+    @Path("/basic")
+    public List<BasicAnimalDTO> getBasicAnimalList() {
+        List<AnimalEntity> animalEntityList = repository.getAll();
+        List<BasicAnimalDTO> basicAnimalDTOS = new ArrayList<>();
+        animalEntityList.forEach(animal -> {
+            basicAnimalDTOS.add(BasicAnimalDTO.fromEntity(animal));
+        });
+        return basicAnimalDTOS;
     }
 }
