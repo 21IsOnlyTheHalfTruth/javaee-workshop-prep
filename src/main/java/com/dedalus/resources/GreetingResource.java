@@ -1,6 +1,7 @@
 package com.dedalus.resources;
 
 import com.dedalus.model.AnimalEntity;
+import com.dedalus.model.AnimalType;
 import com.dedalus.persistence.AnimalRepository;
 
 import javax.inject.Inject;
@@ -19,10 +20,13 @@ public class GreetingResource {
     AnimalRepository repository;
 
     @POST
-
     public AnimalEntity postAnimal(AnimalEntity animal) {
        /* AnimalEntity greetingEntity = new AnimalEntity();
         greetingEntity.setPhrase("Hello World!");*/
         return animal /*repository.save(greetingEntity)*/;
+    }
+    @GET
+    public AnimalEntity postAnimal() {
+        return new AnimalEntity("myname", AnimalType.HELICOPTER, "myComment", false);
     }
 }
