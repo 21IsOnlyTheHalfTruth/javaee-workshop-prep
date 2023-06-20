@@ -25,12 +25,25 @@ public class AnimalRepository {
     }
 
     public AnimalEntity put(AnimalEntity entity) {
-        Optional<AnimalEntity> entityFromDBOptional = getRefById(entity);
+        Optional<AnimalEntity> entityFromDBOptional = getRefById(entity.id);
         // set attributes
         if(entityFromDBOptional.isEmpty()) {
             System.out.println("Was not able to find the id:"+entity.id); // in a real world this would be a logger
             throw new WebApplicationException("Was not able to find the id:  " +entity.id, Response.Status.NOT_FOUND);
         }
+        em.merge(entity);
+        // maybe we have to flush
+        return entity;
+    }
+    public AnimalEntity setAvailable(Long id) {
+        Optional<AnimalEntity> entityFromDBOptional = getById(id);
+        // set attributes
+        if(entityFromDBOptional.isEmpty()) {
+            System.out.println("Was not able to find the id:"+id); // in a real world this would be a logger
+            throw new WebApplicationException("Was not able to find the id:  " +id, Response.Status.NOT_FOUND);
+        }
+        AnimalEntity entity = entityFromDBOptional.get();
+        entity.available = false;
         em.merge(entity);
         // maybe we have to flush
         return entity;
@@ -47,8 +60,11 @@ public class AnimalRepository {
     }
 
 
-    public Optional<AnimalEntity> getRefById(AnimalEntity entity){
-        return Optional.ofNullable(em.getReference(entity.getClass(), entity.id));
+    public Optional<AnimalEntity> getRefById(Long id){
+        return Optional.ofNullable(em.getReference(AnimalEntity.class, id));
+    }
+    public Optional<AnimalEntity> getById(Long id){
+        return Optional.ofNullable(em.find(AnimalEntity.class, id));
     }
 }
 
