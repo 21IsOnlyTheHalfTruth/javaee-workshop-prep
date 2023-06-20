@@ -35,7 +35,16 @@ public class AnimalResource {
     }
 
     @PUT
+    @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+    @Path("/adopt/{id}")
+    public AnimalDTO adoptAnimal(@PathParam("id") Long id) {
+        AnimalEntity savedEntity = repository.setAvailable(id);
+        return AnimalDTO.fromEntity(savedEntity);
+    }
+
+    @PUT
     public AnimalDTO updateAnimal(AnimalDTO animalDTO) {
+        // TODO: we could update the path by adding the id into it
         AnimalEntity animal = AnimalEntity.getAnimalEntity(animalDTO);
         AnimalEntity savedEntity = repository.put(animal);
         return AnimalDTO.fromEntity(savedEntity);
@@ -46,6 +55,5 @@ public class AnimalResource {
     public List<BasicAnimalDTO> getBasicAnimalList() {
         List<AnimalEntity> animalEntityList = repository.getAll();
         return animalEntityList.stream().map(BasicAnimalDTO::fromEntity).collect(Collectors.toList());
-
     }
 }
