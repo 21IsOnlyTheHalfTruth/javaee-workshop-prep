@@ -10,6 +10,18 @@ public class AnimalEntity {
     @GeneratedValue
     public Long id;
 
+    public AnimalEntity(){}
+    public AnimalEntity(String name, AnimalType type, String comment, boolean available) {
+        this.name = name;
+        this.type = type;
+        this.comment = comment;
+        this.available = available;
+    }
+    public AnimalEntity(String name, AnimalType type, String comment, boolean available, Long id) {
+        this(name, type,comment, available);
+        this.id = id;
+    }
+
     public String name;
     public AnimalType type;
 
