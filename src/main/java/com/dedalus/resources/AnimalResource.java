@@ -34,6 +34,13 @@ public class AnimalResource {
         return AnimalDTO.fromEntity(savedEntity);
     }
 
+    @PUT
+    public AnimalDTO updateAnimal(AnimalDTO animalDTO) {
+        AnimalEntity animal = AnimalEntity.getAnimalEntity(animalDTO);
+        AnimalEntity savedEntity = repository.put(animal);
+        return AnimalDTO.fromEntity(savedEntity);
+    }
+
     @GET
     @Path("/basic")
     public List<BasicAnimalDTO> getBasicAnimalList() {
