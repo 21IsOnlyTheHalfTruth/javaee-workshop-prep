@@ -20,11 +20,23 @@ public class AnimalRepository {
         em.persist(entity);
         return entity;
     }
+
     public AnimalEntity put(AnimalEntity entity) {
-        em.persist(entity);
-        return entity;
+        AnimalEntity entityFromDB = em.find(AnimalEntity.class, entity);
+        // set attributes
+        updateEntity(entity, entityFromDB);
+        em.merge(entityFromDB);
+        return entityFromDB;
     }
-    public List<AnimalEntity> getAll(){
+
+    private void updateEntity(AnimalEntity source, AnimalEntity target) {
+        source.name = target.name;
+        source.type = target.type;
+        source.comment = target.comment;
+        source.available = target.available;
+    }
+
+    public List<AnimalEntity> getAll() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<AnimalEntity> cq = cb.createQuery(AnimalEntity.class);
         Root<AnimalEntity> rootEntry = cq.from(AnimalEntity.class);
@@ -33,5 +45,18 @@ public class AnimalRepository {
         TypedQuery<AnimalEntity> allQuery = em.createQuery(all);
         return allQuery.getResultList();
     }
+}
+/*
+    public AnimalEntity getById(Long id){
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<AnimalEntity> cq = cb.createQuery("select * from Artist where id="; AnimalEntity.class);
+
+        Root<AnimalEntity> rootEntry = cq.from(AnimalEntity.class);
+        CriteriaQuery<AnimalEntity> all = cq.select(rootEntry);
+
+        TypedQuery<AnimalEntity> allQuery = em.createQuery(all);
+        return allQuery.getResultList();
+    }
 
 }
+*/
