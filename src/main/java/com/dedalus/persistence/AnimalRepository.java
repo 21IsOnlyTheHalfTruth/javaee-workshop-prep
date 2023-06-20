@@ -20,6 +20,10 @@ public class AnimalRepository {
         em.persist(entity);
         return entity;
     }
+    public AnimalEntity put(AnimalEntity entity) {
+        em.persist(entity);
+        return entity;
+    }
     public List<AnimalEntity> getAll(){
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<AnimalEntity> cq = cb.createQuery(AnimalEntity.class);

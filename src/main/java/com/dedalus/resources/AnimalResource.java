@@ -38,10 +38,7 @@ public class AnimalResource {
     @Path("/basic")
     public List<BasicAnimalDTO> getBasicAnimalList() {
         List<AnimalEntity> animalEntityList = repository.getAll();
-        List<BasicAnimalDTO> basicAnimalDTOS = new ArrayList<>();
-        animalEntityList.forEach(animal -> {
-            basicAnimalDTOS.add(BasicAnimalDTO.fromEntity(animal));
-        });
-        return basicAnimalDTOS;
+        return animalEntityList.stream().map(BasicAnimalDTO::fromEntity).collect(Collectors.toList());
+
     }
 }
