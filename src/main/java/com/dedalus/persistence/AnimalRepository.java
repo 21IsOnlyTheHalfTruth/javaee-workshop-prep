@@ -22,7 +22,7 @@ public class AnimalRepository {
     }
 
     public AnimalEntity put(AnimalEntity entity) {
-        AnimalEntity entityFromDB = em.find(AnimalEntity.class, entity);
+        AnimalEntity entityFromDB = em.find(AnimalEntity.class, entity.id);
         // set attributes
         updateEntity(entity, entityFromDB);
         em.merge(entityFromDB);

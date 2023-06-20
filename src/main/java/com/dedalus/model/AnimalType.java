@@ -1,7 +1,8 @@
 package com.dedalus.model;
 
 public enum AnimalType {
-    BAR(),
+    BEAR(),
     CAT(),
-    HELICOPTER();
+    APACHE_HELICOPTER(),
+    WALRUS(),
 }
