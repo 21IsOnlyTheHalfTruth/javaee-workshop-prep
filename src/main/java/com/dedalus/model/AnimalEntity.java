@@ -1,5 +1,7 @@
 package com.dedalus.model;
 
+import com.dedalus.dto.AnimalDTO;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,6 +22,12 @@ public class AnimalEntity {
     public AnimalEntity(String name, AnimalType type, String comment, boolean available, Long id) {
         this(name, type,comment, available);
         this.id = id;
+    }
+    public static AnimalEntity getAnimalEntity(AnimalDTO animalDTO) {
+        if (animalDTO.id == null){
+            return new AnimalEntity(animalDTO.name, animalDTO.type,animalDTO.comment, animalDTO.available);
+        }
+        return new AnimalEntity(animalDTO.name, animalDTO.type,animalDTO.comment, animalDTO.available, animalDTO.id.longValue());
     }
 
     public String name;
