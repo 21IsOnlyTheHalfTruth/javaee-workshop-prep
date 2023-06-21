@@ -9,6 +9,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.List;
@@ -60,10 +61,10 @@ public class AnimalRepository {
     }
 
 
-    public Optional<AnimalEntity> getRefById(Long id){
+    public Optional<AnimalEntity> getRefById(@NotNull()  Long id){
         return Optional.ofNullable(em.getReference(AnimalEntity.class, id));
     }
-    public Optional<AnimalEntity> getById(Long id){
+    public Optional<AnimalEntity> getById(@NotNull() Long id){
         return Optional.ofNullable(em.find(AnimalEntity.class, id));
     }
 }
