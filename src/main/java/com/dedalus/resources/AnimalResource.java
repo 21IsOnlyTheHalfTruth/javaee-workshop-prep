@@ -7,12 +7,12 @@ import com.dedalus.persistence.AnimalRepository;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,14 +32,14 @@ public class AnimalResource {
     }
 
     @GET
-    public AnimalDTO getAnimalById(@NotNull() Long id) {  // TODO 404
+    public AnimalDTO getAnimalById(@NotNull() Long id) {
         Optional<AnimalEntity> optionalEntity = repository.getById(id);
-        return  optionalEntity.map(AnimalDTO::fromEntity).orElse(null);
+        return AnimalDTO.fromEntity(assertEntityFound(optionalEntity, id));
     }
 
 
     @POST
-    public AnimalDTO postAnimal(@Valid AnimalDTO animalDTO) {
+    public AnimalDTO postAnimal(@Valid() AnimalDTO animalDTO) { // TODO: ADD BETTER VALIDATION
         AnimalEntity animal = AnimalEntity.getAnimalEntity(animalDTO);
         AnimalEntity savedEntity = repository.save(animal);
         return AnimalDTO.fromEntity(savedEntity);
@@ -49,20 +49,18 @@ public class AnimalResource {
     @Consumes({MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
     @Path("/adopt/{id}")
     public AnimalDTO adoptAnimal(@PathParam("id") Long id) {
-        AnimalEntity savedEntity = repository.setAvailable(id);
-        return AnimalDTO.fromEntity(savedEntity);
+        Optional<AnimalEntity> savedEntity = repository.getById(id);
+        assertEntityFound(savedEntity, id);
+        assertNotAdopted(savedEntity.get()); // this will create another DB query => performance issue => simplify it
+        Optional<AnimalEntity> adoptedEntity = repository.setAdopt(id);
+        return AnimalDTO.fromEntity(adoptedEntity.get()); // we already check if animal exist
     }
 
     @PUT
-    public AnimalDTO updateAnimal(AnimalDTO animalDTO) {
-        // TODO: we could update the path by adding the id into it
+    public AnimalDTO updateAnimal(@Valid() AnimalDTO animalDTO) {
         AnimalEntity animal = AnimalEntity.getAnimalEntity(animalDTO);
         Optional<AnimalEntity> savedEntity = repository.put(animal);
-        if(savedEntity.isEmpty()){
-            System.out.println("Was not able to find the id:"+animal.id); // in a real world this would be a logger
-            throw new WebApplicationException("Was not able to find the id:  " +animal.id, Response.Status.NOT_FOUND); // TODO 404 like this?
-        }
-        return AnimalDTO.fromEntity(savedEntity.get());
+        return AnimalDTO.fromEntity(assertEntityFound(savedEntity, animal.id));
     }
 
     @GET
@@ -70,5 +68,21 @@ public class AnimalResource {
     public List<BasicAnimalDTO> getBasicAnimalList() {
         List<AnimalEntity> animalEntityList = repository.getAll();
         return animalEntityList.stream().map(BasicAnimalDTO::fromEntity).collect(Collectors.toList());
+    }
+
+    private AnimalEntity assertEntityFound(Optional<AnimalEntity> entity, Long id){
+        if(entity.isEmpty()){
+            System.out.println("Was not able to find the id:" + id); // in a real world this would be a logger
+            throw new WebApplicationException("Was not able to find the id:  " + id, Response.Status.NOT_FOUND); // TODO 404 like this?
+        }
+        return entity.get();
+    }
+
+    private void assertNotAdopted(AnimalEntity entity){
+        if(!entity.available){
+            System.out.println("Animal was already adopted with id:" + entity.id); // in a real world this would be a logger
+            throw new WebApplicationException("Animal was already adopted with id:" + entity.id, Response.Status.
+                    CONFLICT);
+        }
     }
 }

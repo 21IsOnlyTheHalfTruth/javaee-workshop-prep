@@ -10,8 +10,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,18 +31,17 @@ public class AnimalRepository {
         em.merge(entity);
         return Optional.of(entity);
     }
-    public AnimalEntity setAvailable(Long id) {
+    public Optional<AnimalEntity> setAdopt(Long id) {
         Optional<AnimalEntity> entityFromDBOptional = getById(id);
         // set attributes
         if(entityFromDBOptional.isEmpty()) {
-            System.out.println("Was not able to find the id:"+id); // in a real world this would be a logger
-            throw new WebApplicationException("Was not able to find the id:  " +id, Response.Status.NOT_FOUND);
+            return Optional.empty();
         }
         AnimalEntity entity = entityFromDBOptional.get();
         entity.available = false;
         em.merge(entity);
         // maybe we have to flush
-        return entity;
+        return Optional.of(entity);
     }
 
     public List<AnimalEntity> getAll() {
