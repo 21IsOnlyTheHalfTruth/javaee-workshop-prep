@@ -25,16 +25,15 @@ public class AnimalRepository {
         return entity;
     }
 
-    public AnimalEntity put(AnimalEntity entity) {
+    public Optional<AnimalEntity> put(AnimalEntity entity) {
         Optional<AnimalEntity> entityFromDBOptional = getRefById(entity.id);
         // set attributes
         if(entityFromDBOptional.isEmpty()) {
-            System.out.println("Was not able to find the id:"+entity.id); // in a real world this would be a logger
-            throw new WebApplicationException("Was not able to find the id:  " +entity.id, Response.Status.NOT_FOUND);
-        }
+            return entityFromDBOptional;
+        } // TODO maybe here stick with optionals
         em.merge(entity);
         // maybe we have to flush
-        return entity;
+        return Optional.of(entity);
     }
     public AnimalEntity setAvailable(Long id) {
         Optional<AnimalEntity> entityFromDBOptional = getById(id);

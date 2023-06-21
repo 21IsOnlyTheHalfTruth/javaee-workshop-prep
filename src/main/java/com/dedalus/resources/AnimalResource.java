@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +31,7 @@ public class AnimalResource {
     }
 
     @GET
-    public AnimalDTO getAnimalById(@NotNull() Long id) {
+    public AnimalDTO getAnimalById(@NotNull() Long id) {  // TODO 404
         Optional<AnimalEntity> optionalEntity = repository.getById(id);
         return  optionalEntity.map(AnimalDTO::fromEntity).orElse(null);
     }
@@ -55,8 +56,12 @@ public class AnimalResource {
     public AnimalDTO updateAnimal(AnimalDTO animalDTO) {
         // TODO: we could update the path by adding the id into it
         AnimalEntity animal = AnimalEntity.getAnimalEntity(animalDTO);
-        AnimalEntity savedEntity = repository.put(animal);
-        return AnimalDTO.fromEntity(savedEntity);
+        Optional<AnimalEntity> savedEntity = repository.put(animal);
+        if(savedEntity.isEmpty()){
+            System.out.println("Was not able to find the id:"+animal.id); // in a real world this would be a logger
+            throw new WebApplicationException("Was not able to find the id:  " +animal.id, Response.Status.NOT_FOUND); // TODO 404 like this?
+        }
+        return AnimalDTO.fromEntity(savedEntity.get());
     }
 
     @GET
