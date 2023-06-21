@@ -4,6 +4,9 @@ import com.dedalus.dto.AnimalDTO;
 import com.dedalus.dto.BasicAnimalDTO;
 import com.dedalus.model.AnimalEntity;
 import com.dedalus.persistence.AnimalRepository;
+import com.dedalus.validation.AnimalValidationErrors;
+import com.dedalus.validation.AnimalValidationException;
+import org.jboss.resteasy.plugins.providers.ReaderProvider;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -73,7 +76,8 @@ public class AnimalResource {
     private AnimalEntity assertEntityFound(Optional<AnimalEntity> entity, Long id){
         if(entity.isEmpty()){
             System.out.println("Was not able to find the id:" + id); // in a real world this would be a logger
-            throw new WebApplicationException("Was not able to find the id:  " + id, Response.Status.NOT_FOUND); // TODO 404 like this?
+            throw new AnimalValidationException(AnimalValidationErrors.ANIMAL_NOT_FOUND, Response.Status.NOT_FOUND);
+            /*throw new WebApplicationException("Was not able to find the id:  " + id, Response.Status.NOT_FOUND); // TODO 404 like this?*/
         }
         return entity.get();
     }
@@ -81,8 +85,9 @@ public class AnimalResource {
     private void assertNotAdopted(AnimalEntity entity){
         if(!entity.available){
             System.out.println("Animal was already adopted with id:" + entity.id); // in a real world this would be a logger
-            throw new WebApplicationException("Animal was already adopted with id:" + entity.id, Response.Status.
-                    CONFLICT);
+            throw new AnimalValidationException(AnimalValidationErrors.ANIMAL_ALREADY_ADOPTED);
+            /*throw new WebApplicationException("Animal was already adopted with id:" + entity.id, Response.Status.
+                    CONFLICT);*/
         }
     }
 }
