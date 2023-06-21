@@ -3,6 +3,9 @@ package com.dedalus.dto;
 import com.dedalus.model.AnimalEntity;
 import com.dedalus.model.AnimalType;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 public class BasicAnimalDTO {
 
     public String name;
