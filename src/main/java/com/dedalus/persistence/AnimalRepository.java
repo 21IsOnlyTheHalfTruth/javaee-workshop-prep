@@ -27,12 +27,10 @@ public class AnimalRepository {
 
     public Optional<AnimalEntity> put(AnimalEntity entity) {
         Optional<AnimalEntity> entityFromDBOptional = getRefById(entity.id);
-        // set attributes
         if(entityFromDBOptional.isEmpty()) {
-            return entityFromDBOptional;
-        } // TODO maybe here stick with optionals
+            return Optional.empty();
+        }
         em.merge(entity);
-        // maybe we have to flush
         return Optional.of(entity);
     }
     public AnimalEntity setAvailable(Long id) {
