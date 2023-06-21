@@ -7,10 +7,12 @@ import com.dedalus.persistence.AnimalRepository;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Path("/resources/animal")
@@ -26,6 +28,13 @@ public class AnimalResource {
         List<AnimalEntity> allEntities = repository.getAll();
         return allEntities.stream().map(AnimalDTO::fromEntity).collect(Collectors.toList());
     }
+
+    @GET
+    public AnimalDTO getAnimalById(@NotNull() Long id) {
+        Optional<AnimalEntity> optionalEntity = repository.getById(id);
+        return  optionalEntity.map(AnimalDTO::fromEntity).orElse(null);
+    }
+
 
     @POST
     public AnimalDTO postAnimal(AnimalDTO animalDTO) {
