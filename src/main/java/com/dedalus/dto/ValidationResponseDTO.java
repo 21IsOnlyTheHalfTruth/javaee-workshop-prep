@@ -16,5 +16,4 @@ public class ValidationResponseDTO {
     public String message;
     public String messageCode;
 
-
 }

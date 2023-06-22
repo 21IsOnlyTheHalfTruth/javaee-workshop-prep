@@ -4,14 +4,12 @@ import com.dedalus.dto.AnimalDTO;
 import com.dedalus.dto.BasicAnimalDTO;
 import com.dedalus.model.AnimalEntity;
 import com.dedalus.persistence.AnimalRepository;
+import com.dedalus.service.NinjaApiController;
 import com.dedalus.validation.AnimalValidationErrors;
 import com.dedalus.validation.AnimalValidationException;
-import org.jboss.resteasy.plugins.providers.ReaderProvider;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -28,6 +26,9 @@ public class AnimalResource {
     @Inject
     AnimalRepository repository;
 
+    @Inject
+    NinjaApiController ninjaApiController;
+
     @GET
     public List<AnimalDTO> getAnimalList() {
         List<AnimalEntity> allEntities = repository.getAll();
@@ -35,14 +36,16 @@ public class AnimalResource {
     }
 
     @GET
-    public AnimalDTO getAnimalById(@NotNull() Long id) {
+    @Path("{id}")
+    public AnimalDTO getAnimalById(@PathParam("id") Long id) {
         Optional<AnimalEntity> optionalEntity = repository.getById(id);
-        return AnimalDTO.fromEntity(assertEntityFound(optionalEntity, id));
+        AnimalDTO animalDTO = AnimalDTO.fromEntity(assertEntityFound(optionalEntity, id));
+        return ninjaApiController.populateAdditionalInformation(animalDTO);
     }
 
 
     @POST
-    public AnimalDTO postAnimal(@Valid() AnimalDTO animalDTO) { // TODO: ADD BETTER VALIDATION
+    public AnimalDTO postAnimal(@Valid() AnimalDTO animalDTO) {
         AnimalEntity animal = AnimalEntity.getAnimalEntity(animalDTO);
         AnimalEntity savedEntity = repository.save(animal);
         return AnimalDTO.fromEntity(savedEntity);
@@ -77,7 +80,6 @@ public class AnimalResource {
         if(entity.isEmpty()){
             System.out.println("Was not able to find the id:" + id); // in a real world this would be a logger
             throw new AnimalValidationException(AnimalValidationErrors.ANIMAL_NOT_FOUND, Response.Status.NOT_FOUND);
-            /*throw new WebApplicationException("Was not able to find the id:  " + id, Response.Status.NOT_FOUND); // TODO 404 like this?*/
         }
         return entity.get();
     }
@@ -86,8 +88,6 @@ public class AnimalResource {
         if(!entity.available){
             System.out.println("Animal was already adopted with id:" + entity.id); // in a real world this would be a logger
             throw new AnimalValidationException(AnimalValidationErrors.ANIMAL_ALREADY_ADOPTED);
-            /*throw new WebApplicationException("Animal was already adopted with id:" + entity.id, Response.Status.
-                    CONFLICT);*/
         }
     }
 }
