@@ -36,17 +36,12 @@ public class NinjaApiController {
      *
      * @return null if the call fails
      */
-    @CacheResult(cacheName = "animal-cache")
-    @Retry(maxRetries = 2, maxDuration = 2000)
+    // @CacheResult(cacheName = "animal-cache") Do not cache here, does not work super good with the fallback
+    @Retry(maxRetries = 2, maxDuration = 2000, delay = 1000)
     @Fallback(fallbackMethod = "fallbackSingleNinjaAnimal")
     public List<NinjaAnimalDTO> getAnimalsByName(String name) {
         if (ninjaApiConfig.getNinjaApiKey() == null) {
             throw new WebApplicationException("NinjaApiController#getAnimalsByName(): " + ExternalSystemErrors.API_KEY_NOT_CONFIGURED.toString(), Response.Status.INTERNAL_SERVER_ERROR);
-        }
-        try {
-            Thread.sleep(5000L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
         return ninjaApiRestClient.getAnimalList(name, ninjaApiConfig.getNinjaApiKey());
     }
