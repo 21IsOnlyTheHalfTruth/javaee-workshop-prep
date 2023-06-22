@@ -8,6 +8,7 @@ import org.eclipse.microprofile.faulttolerance.Fallback;
 import io.quarkus.cache.CacheResult;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,8 +21,7 @@ import java.util.Optional;
 @ApplicationScoped
 public class NinjaApiController {
 
-    @Inject
-    Logger log;
+    private static final Logger log = LoggerFactory.getLogger(NinjaApiController.class);
 
     @Inject
     @RestClient
@@ -39,7 +39,7 @@ public class NinjaApiController {
     @CacheResult(cacheName = "animal-cache")
     @Retry(maxRetries = 2, maxDuration = 2000)
     @Fallback(fallbackMethod = "fallbackSingleNinjaAnimal")
-    private List<NinjaAnimalDTO> getAnimalsByName(String name) {
+    public List<NinjaAnimalDTO> getAnimalsByName(String name) {
         if (ninjaApiConfig.getNinjaApiKey() == null) {
             throw new WebApplicationException("NinjaApiController#getAnimalsByName(): " + ExternalSystemErrors.API_KEY_NOT_CONFIGURED.toString(), Response.Status.INTERNAL_SERVER_ERROR);
         }
@@ -77,7 +77,7 @@ public class NinjaApiController {
         return firstAnimal;
     }
 
-    public NinjaAnimalDTO fallbackSingleNinjaAnimal(String name) {
+    public List<NinjaAnimalDTO> fallbackSingleNinjaAnimal(String name) {
         log.info("Falling back to NinjaApiController#fallbackSingleNinjaAnimal()");
         return null;
     }
