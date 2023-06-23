@@ -2,7 +2,6 @@ package com.dedalus.dto;
 
 import com.dedalus.model.AnimalEntity;
 import com.dedalus.model.AnimalType;
-import com.dedalus.service.NinjaAnimalDTO;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import javax.validation.constraints.NotBlank;

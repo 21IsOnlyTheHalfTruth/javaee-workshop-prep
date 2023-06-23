@@ -23,7 +23,7 @@ public class AnimalEntity {
         this(name, type,comment, available);
         this.id = id;
     }
-    public static AnimalEntity getAnimalEntity(AnimalDTO animalDTO) {
+    public static AnimalEntity fromAnimalDTO(AnimalDTO animalDTO) {
         if (animalDTO.id == null){
             return new AnimalEntity(animalDTO.name, animalDTO.type,animalDTO.comment, animalDTO.available);
         }

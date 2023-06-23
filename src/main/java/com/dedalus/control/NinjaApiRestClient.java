@@ -1,5 +1,6 @@
-package com.dedalus.service;
+package com.dedalus.control;
 
+import com.dedalus.dto.NinjaAnimalDTO;
 import io.quarkus.cache.CacheResult;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 

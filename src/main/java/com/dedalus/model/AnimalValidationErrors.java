@@ -1,4 +1,4 @@
-package com.dedalus.validation;
+package com.dedalus.model;
 
 public enum AnimalValidationErrors {
     ANIMAL_ALREADY_ADOPTED("That animal that you tried to adopt has already been adopted"),

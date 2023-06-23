@@ -1,4 +1,4 @@
-package com.dedalus.service;
+package com.dedalus.dto;
 
 import java.util.HashMap;
 import java.util.List;

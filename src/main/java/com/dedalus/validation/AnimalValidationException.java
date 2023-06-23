@@ -1,5 +1,7 @@
 package com.dedalus.validation;
 
+import com.dedalus.model.AnimalValidationErrors;
+
 import javax.ws.rs.core.Response;
 
 public class AnimalValidationException extends RuntimeException {

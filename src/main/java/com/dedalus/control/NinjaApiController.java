@@ -1,11 +1,12 @@
-package com.dedalus.service;
+package com.dedalus.control;
 
 import com.dedalus.config.NinjaApiConfig;
 import com.dedalus.dto.AnimalDTO;
+import com.dedalus.dto.NinjaAnimalDTO;
+import com.dedalus.model.ExternalSystemError;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 
-import io.quarkus.cache.CacheResult;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,9 +42,18 @@ public class NinjaApiController {
     @Fallback(fallbackMethod = "fallbackSingleNinjaAnimal")
     public List<NinjaAnimalDTO> getAnimalsByName(String name) {
         if (ninjaApiConfig.getNinjaApiKey() == null) {
-            throw new WebApplicationException("NinjaApiController#getAnimalsByName(): " + ExternalSystemErrors.API_KEY_NOT_CONFIGURED.toString(), Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException("NinjaApiController#getAnimalsByName(): " + ExternalSystemError.API_KEY_NOT_CONFIGURED.toString(), Response.Status.INTERNAL_SERVER_ERROR);
         }
-        return ninjaApiRestClient.getAnimalList(name, ninjaApiConfig.getNinjaApiKey());
+        List<NinjaAnimalDTO> response = null;
+        try{
+            response =  ninjaApiRestClient.getAnimalList(name, ninjaApiConfig.getNinjaApiKey());
+        }catch(WebApplicationException e){
+            if(e.getResponse().getStatus() == 400){ //Could be the whole 400 range
+                log.info(ExternalSystemError.EXTERNAL_BAD_REQUEST + ": NinjaApiController#getAnimalsByName()");
+            }
+            throw e;
+        }
+        return response;
     }
 
     public AnimalDTO populateAdditionalInformation(AnimalDTO animalDTO) {
@@ -73,7 +83,7 @@ public class NinjaApiController {
     }
 
     public List<NinjaAnimalDTO> fallbackSingleNinjaAnimal(String name) {
-        log.info("Falling back to NinjaApiController#fallbackSingleNinjaAnimal()");
+        log.info(ExternalSystemError.FALLBACK_METHOD_ACTIVATED + ": NinjaApiController#fallbackSingleNinjaAnimal()");
         return null;
     }
 }
